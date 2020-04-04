@@ -39,4 +39,5 @@ Objective is to prompt users to install necessary packages for the command. It s
 
 
 ## Doubts
-- Unable to find source of `compiler.purgeInputFileSystem()` which removes cache
+- ~~Unable to find source of `compiler.purgeInputFileSystem()` which removes cache~~\
+It is `Compilation.purgeInputFileSystem` which calls `CachedInputFileSystem.purge()`

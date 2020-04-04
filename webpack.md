@@ -1,0 +1,114 @@
+# Webpack
+
+## Compiler
+### Methods
+- `constructor`
+  - Hooks declared and defined
+  - `ResolverFactory` instance created
+- `readRecords(callback)`:\
+  - In my understanding, this method reads JSON from `this.recordsInputPath` , if value set, using `this.inputFileSystem` which is `CachedInputFileSystem`
+  - calls `callback` passed
+- `compile(callback)`:\
+  - params = `newCompilationParams()`
+  - `hooks.beforeCompile` with `params` passed
+  - `hooks.compile`
+  - `hooks.make` with `compilation` passed. Once module building is done, `compilation.finish` is called.
+  - call `compilation.seal`
+  - call callback
+- `newCompilationParams()`:\
+  - call `createNormalModuleFactory` and `createContextModuleFactory`
+- `createNormalModuleFactory()`:\
+  - new `NormalModuleFactory` instance
+  - `hooks.normalModuleFactory` triggered
+- `createContextModuleFactory()`:\
+  - new `ContextModuleFactory` instance
+  - `hooks.ContextModuleFactory` triggered
+- `newCompilation()`:\
+  - create new `Compilation` object
+  - trigger `hooks.thisCompilation` with `compilation`
+  - trigger `hooks.compilation` with `compilation`
+- `run(callback)`:\
+  If already running, `ConcurrentCompilationError` is thrown
+  - `startTime` recorded
+  - triggers `this.compile` which inturn calls `onCompiled` as callback
+  - `onCompiled()`:\
+    - It checks the plugin which hooks on `shouldEmit`.
+      - If this returns `false`, it generates new `Stats` with `compilation` and ends the process with `hooks.done` being triggered.
+      - Else `emitAssets()` called
+  - `hooks.beforeRun` is registered
+    - `finalCallback()` is called. (This method is explained in [here](./bin_webpack-cli.md))
+    - inside `hooks.beforeRun`, `hooks.run` hook is tapped. Here also, error triggeres `finalCallback()`
+    - `this.compile(onCompiled)` is called
+- `emitAssets()`:\
+  - call `emitRecords()`
+- `emitRecords()`:\
+## Compilation
+### Methods
+- `finish()`:\
+  - when all modules are built, it triggers `hooks.finishModules` in `Compilation` with `this.modules` array
+  - call `reportDependencyErrorsAndWarnings`
+- `reportDependencyErrorsAndWarnings(module, blocks)`:\
+  - For each module, their dependencies are checked and their warnings and error, if any, are reported **recursively**.
+- `seal()`:\
+  - contains huge number of events.
+  - It also contains many optimizations and hashing process
+  - Calls `unseal`
+- `unseal()`
+
+### Event order
+- `beforeRun`
+- `run`
+- `normalModuleFactory`
+- `contextModuleFactory`
+- `beforeCompile`
+- `compile`
+- `thisCompilation`
+- `compilation`
+- `make`
+- `seal`
+- `optimizeDependenciesBasic` || `optimizeDependencies` || `optimizeDependenciesAdvanced`
+- `afterOptimizeDependencies`
+- `beforeChunks`
+- `optimizeModulesBasic` || `optimizeModules` || `optimizeModulesAdvanced`
+- `afterOptimizeModules`
+- `optimizeChunksBasic` || `optimizeChunks` || `optimizeChunksAdvanced`
+- `afterOptimizeChunks`
+- `optimizeTree`
+- `afterOptimizeTree`
+- `optimizeChunkModulesBasic` || `optimizeChunkModules` || `optimizeChunkModulesAdvanced`
+- `afterOptimizeChunkModules`
+- `shouldRecord`
+- `reviveModules`
+- `optimizeModuleOrder`
+- `advancedOptimizeModuleOrder`
+- `beforeModuleIds`
+- `moduleIds`
+- `optimizeModuleIds`
+- `afterOptimizeModuleIds`
+- `reviveChunks`
+- `optimizeChunkOrder`
+- `beforeChunkIds`
+- `optimizeChunkIds`
+- `afterOptimizeChunkIds`
+- `recordModules`
+- `recordChunks`
+- `beforeHash`
+- `afterHash`
+- `recordHash`
+- `beforeModuleAssets`
+- `shouldGenerateChunkAssets`
+- `beforeChunkAssets`
+- `additionalChunkAssets`
+- `record`
+- `additionalAssets`
+- `optimizeChunkAssets`
+- `afterOptimizeChunkAssets`
+- `optimizeAssets`
+- `afterOptimizeAssets`
+- `needAdditionalSeal`
+- `unseal`
+- `afterSeal`
+- `afterCompile`
+- `shouldEmit` || `done`
+- `shouldEmit` && `needAdditionalPass` && `done` && `additionalPass`
+- `callAsync`
