@@ -32,6 +32,7 @@ In this package or its sub-modules, `webpack` is invoked several times.
     - When `watch` is disabled or when error occurs, we can clear the cache
   - In `watch` mode, `compiler.watch` is triggered, else `compiler.run`
 - While invoking compiler, `compilerCallback` is passed as callback.
+- `compiler.run()`
 
 ## .node_modules/webpack-cli/bin/utils/prompt-command.js
 Objective is to prompt users to install necessary packages for the command. It seems that it used to be part of existing package and got moved as part of separate package.
@@ -40,4 +41,4 @@ Objective is to prompt users to install necessary packages for the command. It s
 
 ## Doubts
 - ~~Unable to find source of `compiler.purgeInputFileSystem()` which removes cache~~\
-It is `Compilation.purgeInputFileSystem` which calls `CachedInputFileSystem.purge()`
+It is `Compilation.purgeInputFileSystem` which calls `CachedInputFileSystem.purge()`, from `require('enchanced-resolve)`.

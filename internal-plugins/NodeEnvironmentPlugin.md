@@ -1,0 +1,5 @@
+- Integrate the following during `beforeRun`:
+  - console logger
+  - `CachedInputFileSystem`
+  - output file system
+  - file watching system
